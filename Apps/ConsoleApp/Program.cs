@@ -1,6 +1,16 @@
-﻿using DocumentationGenerator;
-using DocumentationGenerator.CodeParsing;
-using DocumentationGenerator.CodeParsing.Analyzers;
+﻿using ConsoleApp;
+using DocumentationGenerator;
+using DocumentationGenerator.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+IConfiguration config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+var provider = new ServiceCollection()
+    .Inject(config)
+    .BuildServiceProvider();
 
 Console.Write("Enter your project path: ");
 var path = Console.ReadLine();
@@ -8,16 +18,11 @@ var path = Console.ReadLine();
 while (string.IsNullOrWhiteSpace(path))
     path = Console.ReadLine();
 
-var dotnetAnalyzer = new DotnetProjectAnalyzer();
-var parser = new ProjectAnalyzer(dotnetAnalyzer);
-var documentationGenerator = new Generator();
+var documentationGenerator = new Generator(provider.GetRequiredService<IProjectAnalyzer>());
 
-var projectInfoResult = parser.AnalyzeProject(path);
+var result = await documentationGenerator.GenerateDocumentation(path);
 
-if (projectInfoResult.IsFailure)
+if (result.IsFailure)
 {
-    Console.WriteLine($"{projectInfoResult.Error.Code} {projectInfoResult.Error.Message}");
-    return;
+    Console.WriteLine($"В процессе генерации документации произошла ошибка: {result.Error.Message}");
 }
-
-var documentationResult = documentationGenerator.GenerateDocumentation(projectInfoResult.Value);

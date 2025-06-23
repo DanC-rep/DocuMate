@@ -5,19 +5,35 @@ using Domain.Errors;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using FileInfo = Domain.FileInfo;
 
 namespace DocumentationGenerator.CodeParsing.Analyzers;
 
 public class DotnetProjectAnalyzer : IProjectAnalyzer
 {
+    private readonly ILogger<DotnetProjectAnalyzer> _logger;
+    private readonly IConfiguration _configuration;
+    
+    public DotnetProjectAnalyzer(
+        ILogger<DotnetProjectAnalyzer> logger,
+        IConfiguration configuration)
+    {
+        _logger = logger;
+        _configuration = configuration;
+    }
+    
     public Result<ProjectAnalysisResult, Error> AnalyzeProject(string projectPath)
     {
+        _logger.LogWarning("Logger working!");
+        
         var result = new ProjectAnalysisResult();
 
         if (Directory.GetFiles(projectPath, "*.sln").Length == 0)
         {
-            // logger.LogError();
+            _logger.LogWarning("In folder {path} there is no .sln file", projectPath);
+            
             return Errors.NotFound(null, "Solution file");
         }
 
@@ -36,7 +52,7 @@ public class DotnetProjectAnalyzer : IProjectAnalyzer
             }
             catch (Exception ex)
             {
-                // logger.LogError();
+                _logger.LogError("Error analyzing file {0}: {1}", file, ex.Message);
                 return new Error("file.analyze", $"Error analyzing file {file}: {ex.Message}", ErrorType.Failure);
             }
         }
