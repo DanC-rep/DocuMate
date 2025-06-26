@@ -1,4 +1,6 @@
 ﻿using DocumentationGenerator.CodeParsing.Analyzers;
+using DocumentationGenerator.Documentation;
+using DocumentationGenerator.DocumentationTemplates;
 using DocumentationGenerator.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,9 @@ public static class DependencyInjection
         
         services.AddLogging(configuration);
         services.AddScoped<IProjectAnalyzer, DotnetProjectAnalyzer>();
+        services.AddScoped<IDocumentationGenerator, LlamaDocsGenerator>();
+        services.AddScoped<IPromptGenerator, PromptGenerator>();
+        services.AddScoped<IDocumentationTemplate, DotnetDocumentationTemplate>();
 
         return services;
     }

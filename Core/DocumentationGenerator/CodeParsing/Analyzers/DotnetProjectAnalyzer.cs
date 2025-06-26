@@ -14,14 +14,10 @@ namespace DocumentationGenerator.CodeParsing.Analyzers;
 public class DotnetProjectAnalyzer : IProjectAnalyzer
 {
     private readonly ILogger<DotnetProjectAnalyzer> _logger;
-    private readonly IConfiguration _configuration;
     
-    public DotnetProjectAnalyzer(
-        ILogger<DotnetProjectAnalyzer> logger,
-        IConfiguration configuration)
+    public DotnetProjectAnalyzer(ILogger<DotnetProjectAnalyzer> logger)
     {
         _logger = logger;
-        _configuration = configuration;
     }
     
     public Result<ProjectAnalysisResult, Error> AnalyzeProject(string projectPath)
