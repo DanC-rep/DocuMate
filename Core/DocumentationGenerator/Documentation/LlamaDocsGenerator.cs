@@ -28,7 +28,9 @@ public class LlamaDocsGenerator : IDocumentationGenerator
         _documentationTemplate = documentationTemplate;
     }
     
-    public async Task<Result<List<string>, Error>> GenerateDocumentation(ProjectAnalysisResult projectInfo)
+    public async Task<Result<Dictionary<string, string>, Error>> GenerateDocumentation(
+        ProjectAnalysisResult projectInfo,
+        CancellationToken cancellationToken = default!)
     {
         var client = InitClient();
         var template = _documentationTemplate.GetTemplate();
@@ -38,24 +40,21 @@ public class LlamaDocsGenerator : IDocumentationGenerator
         if (templateResult.IsFailure)
             return templateResult.Error;
 
-        List<string> documentationFiles = [];
+        Dictionary<string, string> documentationFiles = [];
 
-        foreach (var folder in projectInfo.FilesByFolder)
+        foreach (var fileInfo in projectInfo.FilesInfo)
         {
-            foreach (var fileInfo in folder.Value)
-            {
-                var promptResult = _promptGenerator.PreparePrompt(fileInfo);
+            var promptResult = _promptGenerator.PreparePrompt(fileInfo);
 
-                if (promptResult.IsFailure)
-                    continue;
+            if (promptResult.IsFailure)
+                continue;
                 
-                var documentation = await GenerateFileDocumentation(client, promptResult.Value);
+            var documentation = await GenerateFileDocumentation(client, promptResult.Value);
                 
-                if (documentation.IsFailure)
-                    continue;
+            if (documentation.IsFailure)
+                continue;
                 
-                documentationFiles.Add(documentation.Value);
-            }
+            documentationFiles.Add(fileInfo.FilePath, documentation.Value);
         }
 
         return documentationFiles;

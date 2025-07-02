@@ -9,7 +9,7 @@ public class DotnetDocumentationTemplate : IDocumentationTemplate
     {
         var sb = new StringBuilder();
         
-        sb.AppendLine("You need to generate documentation for several C# files in .md format. Follow this template:");
+        sb.AppendLine("You need to generate documentation for several C# files in .md format. Follow the template exactly and don't add anything extra. I want your answer to start with \"# File Overview\":");
         sb.AppendLine();
         sb.AppendLine("1. File Overview");
         sb.AppendLine("   - File Name: [filename]");
@@ -21,9 +21,9 @@ public class DotnetDocumentationTemplate : IDocumentationTemplate
         sb.AppendLine("   - Assembly Attributes: [if any]");
         sb.AppendLine();
         sb.AppendLine("3. Code Structure");
-        sb.AppendLine("   For each class/struct/interface/enum:");
+        sb.AppendLine("   For each class/struct/interface/enum/record:");
         sb.AppendLine("   - Name: [name]");
-        sb.AppendLine("   - Type: [class/struct/interface/enum]");
+        sb.AppendLine("   - Type: [class/struct/interface/enum/record]");
         sb.AppendLine("   - Modifiers: [public/private/etc]");
         sb.AppendLine("   - Inheritance: [base types/interfaces]");
         sb.AppendLine("   - Description: [detailed description of purpose and functionality]");
@@ -35,8 +35,7 @@ public class DotnetDocumentationTemplate : IDocumentationTemplate
         sb.AppendLine("   - Events: [name, type, description]");
         sb.AppendLine();
         sb.AppendLine("5. Usage Examples");
-        sb.AppendLine("   - Provide typical usage scenarios");
-        sb.AppendLine("   - Code examples if applicable");
+        sb.AppendLine("   - Please provide typical usage scenarios, code examples if applicable");
         sb.AppendLine();
         sb.AppendLine("Now analyzing the following code:");
         sb.AppendLine("==================================");

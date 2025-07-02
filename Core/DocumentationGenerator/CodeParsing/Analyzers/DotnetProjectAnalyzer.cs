@@ -41,10 +41,7 @@ public class DotnetProjectAnalyzer : IProjectAnalyzer
                 var fileResult = AnalyzeFile(file);
                 var folder = fileResult.FolderPath;
 
-                if (!result.FilesByFolder.ContainsKey(folder))
-                    result.FilesByFolder[folder] = new List<FileInfo>();
-
-                result.FilesByFolder[folder].Add(fileResult);
+                result.FilesInfo.Add(fileResult);
             }
             catch (Exception ex)
             {
@@ -181,6 +178,7 @@ public class DotnetProjectAnalyzer : IProjectAnalyzer
             StructDeclarationSyntax structDecl => ParseStruct(structDecl),
             InterfaceDeclarationSyntax interfaceDecl => ParseInterface(interfaceDecl),
             EnumDeclarationSyntax enumDecl => ParseEnum(enumDecl),
+            RecordDeclarationSyntax recordDecl => ParseRecord(recordDecl),
             _ => new BaseTypeInfo
             {
                 Name = typeDecl.Identifier.Text,
@@ -224,6 +222,39 @@ public class DotnetProjectAnalyzer : IProjectAnalyzer
         }
 
         return classInfo;
+    }
+    
+    private RecordInfo ParseRecord(RecordDeclarationSyntax recordDecl)
+    {
+        var recordInfo = new RecordInfo
+        {
+            Name = recordDecl.Identifier.Text,
+            Kind = recordDecl.Kind(),
+            Modifiers = recordDecl.Modifiers.Select(m => m.Text).ToList(),
+            BaseTypes = recordDecl.BaseList?.Types.Select(t => t.Type.ToString()).ToList() ?? new List<string>(),
+            Attributes = ParseAttributes(recordDecl),
+        };
+
+        foreach (var member in recordDecl.Members)
+        {
+            switch (member)
+            {
+                case FieldDeclarationSyntax field:
+                    recordInfo.Fields.AddRange(ParseFields(field));
+                    break;
+                case PropertyDeclarationSyntax property:
+                    recordInfo.Properties.Add(ParseProperty(property));
+                    break;
+                case MethodDeclarationSyntax method:
+                    recordInfo.Methods.Add(ParseMethod(method));
+                    break;
+                case ConstructorDeclarationSyntax ctor:
+                    recordInfo.Constructors.Add(ParseConstructor(ctor));
+                    break;
+            }
+        }
+
+        return recordInfo;
     }
 
     private StructInfo ParseStruct(StructDeclarationSyntax structDecl)

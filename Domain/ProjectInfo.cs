@@ -4,13 +4,13 @@ namespace Domain;
 
 public class ProjectAnalysisResult
 {
-    public Dictionary<string, List<FileInfo>> FilesByFolder { get; set; } = [];
+    public List<FileInfo> FilesInfo { get; set; } = [];
 }
 
 public class FileInfo
 {
     public string FilePath { get; init; } = null!;
-    public string FolderPath => Path.GetDirectoryName(FilePath);
+    public string FolderPath => Path.GetDirectoryName(FilePath)!;
     public List<string> Usings { get; init; } = [];
     public List<NamespaceInfo> Namespaces { get; init; } = [];
     public List<ClassInfo> Classes { get; init; } = [];
@@ -43,6 +43,21 @@ public class ClassInfo : BaseTypeInfo
     public List<MethodInfo> Methods { get; init; } = [];
     public List<ConstructorInfo> Constructors { get; init; } = [];
     public List<EventInfo> Events { get; init; } = [];
+}
+
+public class RecordInfo : BaseTypeInfo
+{
+    public List<string> Modifiers { get; init; } = [];
+    
+    public List<string> BaseTypes { get; init; } = [];
+    
+    public List<FieldInfo> Fields { get; init; } = [];
+    
+    public List<PropertyInfo> Properties { get; init; } = [];
+    
+    public List<MethodInfo> Methods { get; init; } = [];
+    
+    public List<ConstructorInfo> Constructors { get; init; } = [];
 }
 
 public class StructInfo : BaseTypeInfo

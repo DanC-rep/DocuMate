@@ -1,7 +1,11 @@
-﻿using DocumentationGenerator.CodeParsing.Analyzers;
+﻿using DocumentationGenerator;
+using DocumentationGenerator.CodeParsing.Analyzers;
 using DocumentationGenerator.Documentation;
 using DocumentationGenerator.DocumentationTemplates;
 using DocumentationGenerator.Interfaces;
+using Domain.Constants;
+using Domain.Options;
+using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -21,6 +25,9 @@ public static class DependencyInjection
         services.AddScoped<IDocumentationGenerator, LlamaDocsGenerator>();
         services.AddScoped<IPromptGenerator, PromptGenerator>();
         services.AddScoped<IDocumentationTemplate, DotnetDocumentationTemplate>();
+        services.AddScoped<IFilesProcessor, FilesProcessor>();
+
+        services.AddInfrastructure(configuration);
 
         return services;
     }
@@ -30,8 +37,8 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.Seq(configuration.GetConnectionString("Seq")
-                         ?? throw new ArgumentException("Seq"))
+            .WriteTo.Seq(configuration.GetConnectionString(ConnectionStrings.Seq)
+                         ?? throw new ArgumentException(ConnectionStrings.Seq))
             .MinimumLevel.Information()
             .CreateLogger();
 
