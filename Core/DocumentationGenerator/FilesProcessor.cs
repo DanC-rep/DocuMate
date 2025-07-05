@@ -43,6 +43,7 @@ public class FilesProcessor : IFilesProcessor
         foreach (var file in filesDocumentation)
         {
             var fileName = Path.GetFileName(file.Key).Replace(".cs", ".md");
+            var fileId = Guid.NewGuid();
             
             using var stream = new MemoryStream();
             await using var writer = new StreamWriter(stream);
@@ -55,7 +56,7 @@ public class FilesProcessor : IFilesProcessor
             await writer.FlushAsync(cancellationToken);
             stream.Position = 0;
             
-            var uploadData = new UploadFileData(stream, bucketName, fileName);
+            var uploadData = new UploadFileData(stream, bucketName, fileId + ".md");
             
             var uploadMinioResult = await _fileProvider.UploadFile(uploadData, cancellationToken);
             
@@ -64,7 +65,7 @@ public class FilesProcessor : IFilesProcessor
 
             var fileData = new FileData
             {
-                Id = Guid.NewGuid(),
+                Id = fileId,
                 FileSize = stream.Length,
                 ContentType = "text/markdown",
                 FilePath = fileName,

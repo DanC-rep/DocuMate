@@ -9,7 +9,9 @@ public class DotnetDocumentationTemplate : IDocumentationTemplate
     {
         var sb = new StringBuilder();
         
-        sb.AppendLine("You need to generate documentation for several C# files in .md format. Follow the template exactly and don't add anything extra. I want your answer to start with \"# File Overview\":");
+        sb.AppendLine("You need to generate documentation for several C# files in .md format. Follow the template exactly and don't add anything extra. " +
+                      "Don`t forgive to add description for each method." +
+                      "If you can`t fill some points, just skip it. I want your answer to start with \"# File Overview\":");
         sb.AppendLine();
         sb.AppendLine("1. File Overview");
         sb.AppendLine("   - File Name: [filename]");
